@@ -3,7 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\OrdenTrabajo;
+use App\Models\PartesTrabajo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -21,19 +21,18 @@ class User extends Authenticatable
     protected $fillable = [
         'user_department_id',
         'user_position_id',
-        'nombre_completo',
-        'dni',
-        'ubicacion',
+        'username',
+        'name',
+        'surname',
         'role',
         'email',
         'password',
-        'telefono',
         'image',
         'seniority_years',
         'seniority_months',
         'holidays_days',
         'inactive',
-        'inmobiliaria'
+        'role'
     ];
 
     /**
@@ -64,5 +63,21 @@ class User extends Authenticatable
         'created_at', 'updated_at', 'deleted_at',
     ];
 
+    public function partesLogs()
+    {
+        return $this->hasMany(TrabajoLog::class);
+    }
 
+    public function tareas()
+    {
+        return $this->belongsToMany(Trabajo::class, 'partes_asignacion', 'trabajador_id', 'trabajo_id');
+    }
+
+    public function tareasEnCurso()
+{
+    // 'partes_asignacion' es la tabla intermedia,
+    // 'trabajador_id' es la clave foránea en la tabla intermedia que se relaciona con este modelo (Trabajador)
+    // 'tarea_id' es la clave foránea en la tabla intermedia que se relaciona con el otro modelo (PartesTrabajo)
+    return $this->belongsToMany(Trabajo::class, 'partes_asignacion', 'trabajador_id', 'trabajo_id')->whereHas('logsEnCurso');
+}
 }
